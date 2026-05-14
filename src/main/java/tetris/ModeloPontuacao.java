@@ -1,7 +1,34 @@
 package tetris;
 
+import java.util.Date;
+
+
 public class ModeloPontuacao {
-    public static void main(String[] args) {
-        
+
+    private final String nome;
+    private final int pontos;
+    private final Date data; 
+
+
+    public ModeloPontuacao(String nome, int pontos, Date data) {
+        this.nome = nome;
+        this.pontos = pontos;
+        this.data = new Date();
     }
+
+
+    public String getNome() {
+        return nome;
+    }
+
+
+    public int getPontos() {
+        return pontos;
+    }
+
+
+    public Date getData() {
+        return data;
+    }
+    
 }

@@ -47,7 +47,7 @@ public class PontuacaoDAO {
             lista.add(new ModeloPontuacao(
                 d.getString("nome"),
                 d.getInteger("pontos"),
-                d.getDate("data")      ////////////////// ATENÇÃO ALTERAR PARA getString ou getDate
+                d.getDate("data") // 
             ))
 
         );
