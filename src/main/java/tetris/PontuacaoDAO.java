@@ -46,8 +46,7 @@ public class PontuacaoDAO {
         .forEach(d ->
             lista.add(new ModeloPontuacao(
                 d.getString("nome"),
-                d.getInteger("pontos"),
-                d.getDate("data") // 
+                d.getInteger("pontos")
             ))
 
         );

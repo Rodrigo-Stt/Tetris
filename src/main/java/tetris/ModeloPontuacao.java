@@ -9,8 +9,7 @@ public class ModeloPontuacao {
     private final int pontos;
     private final Date data; 
 
-
-    public ModeloPontuacao(String nome, int pontos, Date data) {
+    public ModeloPontuacao(String nome, int pontos) {
         this.nome = nome;
         this.pontos = pontos;
         this.data = new Date();
@@ -32,3 +31,5 @@ public class ModeloPontuacao {
     }
     
 }
+
+

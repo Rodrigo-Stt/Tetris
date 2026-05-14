@@ -15,7 +15,7 @@ public class JanelaTetris extends JFrame {
         setLayout(new BorderLayout());
         setResizable(false);
 
-        JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         lblPontuacao.setFont(new Font("Arial", Font.BOLD, 18));
         barra.add(lblPontuacao);
         add(barra, BorderLayout.NORTH);
