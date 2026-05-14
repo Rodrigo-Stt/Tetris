@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class PainelJogo extends JPanel {
 
-    private static final int COLUNAS = 10;
+    private static final int COLUNAS = 12;
     private static final int LINHAS = 20;
     private static final int TAM_CELULA_PX = 30;
     private static final int QUEDAS_MS = 500;

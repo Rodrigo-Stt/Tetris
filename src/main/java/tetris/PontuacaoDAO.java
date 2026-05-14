@@ -9,13 +9,15 @@ public class PontuacaoDAO {
 
     private static PontuacaoDAO instancia; 
     private final MongoCollection<Document> col; 
+   
     private PontuacaoDAO(){
 
-        MongoClient cli = MongoClients.create("mongodb://localhost:27017");
+        MongoClient cli = MongoClients.create("mongodb+srv://Tetris_Ranking:Tetris1234@tetris.ap9ittb.mongodb.net/?appName=Tetris");
         MongoDatabase db = cli.getDatabase("tetris");
         col = db.getCollection("pontuacoes");
 
     }
+
     public static PontuacaoDAO getInstancia() {
         if (instancia == null) 
             

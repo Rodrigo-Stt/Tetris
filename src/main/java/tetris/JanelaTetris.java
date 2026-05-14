@@ -34,31 +34,47 @@ public class JanelaTetris extends JFrame {
     }
 
     private void fimDeJogo(int pontosObtidos) {
-        String nome = JOptionPane.showInputDialog(
-            this,
-            "Fim de Jogo! \n Digite seu nome para o ranking.",
-            "Salvar Pontuação",
-            JOptionPane.QUESTION_MESSAGE);
+    System.out.println("1 - fimDeJogo chamado");
 
-        if (nome == null || nome.isBlank()) nome = "Jogador";
+    String nome = JOptionPane.showInputDialog(
+        this,
+        "Fim de Jogo! \n Digite seu nome para o ranking.",
+        "Salvar Pontuação",
+        JOptionPane.QUESTION_MESSAGE);
 
+    System.out.println("2 - nome digitado: " + nome);
+
+    if (nome == null || nome.isBlank()) nome = "Jogador";
+
+    System.out.println("3 - antes do banco");
+
+    try {
         PontuacaoDAO dao = PontuacaoDAO.getInstancia();
+        System.out.println("4 - DAO criado");
         dao.salvarPontuacao(new ModeloPontuacao(nome, pontosObtidos));
-
+        System.out.println("5 - pontuação salva");
         List<ModeloPontuacao> top10 = dao.obterTopPontuacaos(10);
+        System.out.println("6 - top10 obtido");
         new DialogRanking(this, top10);
-
-        int opc = JOptionPane.showConfirmDialog(
-            this,
-            "Deseja jogar novamente?",
-            "Novo jogo",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
-
-        if (opc == JOptionPane.YES_OPTION) {
-            painelJogo.reiniciar();
-        } else {
-            System.exit(0);
-        }
+        System.out.println("7 - ranking exibido");
+    } catch (Exception e) {
+        System.out.println("ERRO: " + e.getMessage());
     }
+
+    System.out.println("8 - antes do confirm");
+
+    int opc = JOptionPane.showConfirmDialog(
+        this,
+        "Deseja jogar novamente?",
+        "Novo jogo",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+
+    if (opc == JOptionPane.YES_OPTION) {
+        painelJogo.reiniciar();
+    } else {
+        System.exit(0);
+    }
+}
+
 }
