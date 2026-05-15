@@ -8,10 +8,13 @@ import java.util.function.Consumer;
 
 public class PainelJogo extends JPanel {
 
-    private static final int COLUNAS = 12;
+    private static final int COLUNAS = 10;
     private static final int LINHAS = 20;
     private static final int TAM_CELULA_PX = 30;
     private static final int QUEDAS_MS = 500;
+    private int nivel = 1;
+    private int linhasEliminadas = 0;
+    private Tetromino proximaPeca;
 
     private int[][] tabuleiro = new int[LINHAS][COLUNAS];
     private Tetromino pecaAtual;
@@ -23,15 +26,21 @@ public class PainelJogo extends JPanel {
 
     private final Consumer<Integer> cbPontuacao;
     private final Consumer<Integer> cbGameOver;
+    private final Runnable cbAtualizarSidebar;
 
     private final Timer timerQueda = new Timer(QUEDAS_MS, e -> passoQueda());
 
-    public PainelJogo(Consumer<Integer> cbPontuacao, Consumer<Integer> cbGameOver) {
+    public int getNivel() { return nivel; }
+    public int getLinhasEliminadas() { return linhasEliminadas; }
+    public Tetromino getProximaPeca() { return proximaPeca; }
+
+    public PainelJogo(Consumer<Integer> cbPontuacao, Consumer<Integer> cbGameOver, Runnable cbAtualizarSidebar) {
         this.cbPontuacao = cbPontuacao;
         this.cbGameOver = cbGameOver;
+        this.cbAtualizarSidebar = cbAtualizarSidebar;
 
         setPreferredSize(new Dimension(COLUNAS * TAM_CELULA_PX, LINHAS * TAM_CELULA_PX));
-        setBackground(Color.BLACK);
+        setBackground( new Color(10, 10, 12));
         setFocusable(true);
 
         addKeyListener(new KeyAdapter() {
@@ -50,31 +59,38 @@ public class PainelJogo extends JPanel {
     }
 
     private void iniciarNovaPartida() {
-        for (int l = 0; l < LINHAS; l++)
-            for (int c = 0; c < COLUNAS; c++)
-                tabuleiro[l][c] = 0;
-        pontosRodada = 0;
-        cbPontuacao.accept(pontosRodada);
-        novaPeca();
-        timerQueda.start();
-        requestFocusInWindow();
-        repaint();
-    }
+    for (int l = 0; l < LINHAS; l++)
+        for (int c = 0; c < COLUNAS; c++)
+            tabuleiro[l][c] = 0;
+    pontosRodada = 0;
+    nivel = 1;
+    linhasEliminadas = 0;
+    timerQueda.setDelay(QUEDAS_MS);
+
+    proximaPeca = Tetromino.random(); 
+
+    cbPontuacao.accept(pontosRodada);
+    novaPeca();
+    timerQueda.start();
+    requestFocusInWindow();
+    repaint();
+}
 
     private void novaPeca() {
-        pecaAtual = Tetromino.random();
-        // Clona o shape para poder rotacionar independentemente
-        formatoAtual = clonarMatriz(pecaAtual.shape);
-        // Guarda o índice da peça para usar a cor correta (1 a 7)
-        idCorAtual = java.util.Arrays.asList(Tetromino.values()).indexOf(pecaAtual) + 1;
+    pecaAtual = (proximaPeca != null) ? proximaPeca : Tetromino.random();
+    proximaPeca = Tetromino.random();
+    formatoAtual = clonarMatriz(pecaAtual.shape);
+    idCorAtual = java.util.Arrays.asList(Tetromino.values()).indexOf(pecaAtual) + 1;
 
-        xPeça = COLUNAS / 2 - 2;
-        yPeça = 0;
+    xPeça = COLUNAS / 2 - 2;
+    yPeça = 0;
 
-        if (!podeMover(xPeça, yPeça, formatoAtual)) {
-            timerQueda.stop();
-            cbGameOver.accept(pontosRodada);
-        }
+    cbAtualizarSidebar.run();    
+
+    if (!podeMover(xPeça, yPeça, formatoAtual)) {
+        timerQueda.stop();
+        cbGameOver.accept(pontosRodada);
+    }
     }
 
     private int[][] clonarMatriz(int[][] origem) {
@@ -143,10 +159,10 @@ public class PainelJogo extends JPanel {
                 if (mat[r][c] != 0) {
                     int x = nx + c;
                     int y = ny + r;
-                    // Verifica limites do tabuleiro
+
                     if (x < 0 || x >= COLUNAS || y < 0 || y >= LINHAS)
                         return false;
-                    // Verifica colisão com peças já travadas
+
                     if (tabuleiro[y][x] != 0)
                         return false;
                 }
@@ -157,44 +173,50 @@ public class PainelJogo extends JPanel {
         for (int r = 0; r < formatoAtual.length; r++)
             for (int c = 0; c < formatoAtual[0].length; c++)
                 if (formatoAtual[r][c] != 0)
-                    // Grava o idCor no tabuleiro para preservar a cor da peça
+
                     tabuleiro[yPeça + r][xPeça + c] = idCorAtual;
     }
 
     private int limparLinhasCompletas() {
-        int removidas = 0;
-        for (int l = 0; l < LINHAS; l++) {
-            boolean cheia = true;
+    int removidas = 0;
+    for (int l = 0; l < LINHAS; l++) {
+        boolean cheia = true;
+        for (int c = 0; c < COLUNAS; c++)
+            if (tabuleiro[l][c] == 0) { cheia = false; break; }
+        if (cheia) {
+            removidas++;
+            for (int y = l; y > 0; y--)
+                System.arraycopy(tabuleiro[y - 1], 0, tabuleiro[y], 0, COLUNAS);
             for (int c = 0; c < COLUNAS; c++)
-                if (tabuleiro[l][c] == 0) { cheia = false; break; }
-            if (cheia) {
-                removidas++;
-                for (int y = l; y > 0; y--)
-                    System.arraycopy(tabuleiro[y - 1], 0, tabuleiro[y], 0, COLUNAS);
-                for (int c = 0; c < COLUNAS; c++)
-                    tabuleiro[0][c] = 0;
-            }
+                tabuleiro[0][c] = 0;
         }
-        return removidas;
+    }
+    if (removidas > 0) {
+        linhasEliminadas += removidas;
+        nivel = (linhasEliminadas / 10) + 1;
+
+        timerQueda.setDelay(Math.max(100, QUEDAS_MS - (nivel - 1) * 50));
+    }
+    return removidas;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Desenha peças travadas no tabuleiro
+
         for (int y = 0; y < LINHAS; y++)
             for (int x = 0; x < COLUNAS; x++)
                 if (tabuleiro[y][x] != 0)
                     desenharCelula(g, x, y, tabuleiro[y][x]);
 
-        // Desenha peça atual
+
         for (int r = 0; r < formatoAtual.length; r++)
             for (int c = 0; c < formatoAtual[0].length; c++)
                 if (formatoAtual[r][c] != 0)
                     desenharCelula(g, xPeça + c, yPeça + r, idCorAtual);
 
-        // Grade
+
         g.setColor(new Color(60, 60, 60));
         for (int x = 0; x <= COLUNAS; x++)
             g.drawLine(x * TAM_CELULA_PX, 0, x * TAM_CELULA_PX, LINHAS * TAM_CELULA_PX);
