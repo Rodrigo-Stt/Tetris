@@ -19,6 +19,8 @@ public class JanelaTetris extends JFrame {
         setLayout(new BorderLayout());
         setResizable(false);
 
+        setBackground(new Color(15, 15, 25));
+
         painelJogo = new PainelJogo(this::atualizarPontuacao, this::fimDeJogo, this::atualizarSidebar);
         add(painelJogo, BorderLayout.CENTER);
         add(criarSidebar(), BorderLayout.EAST);
@@ -38,51 +40,68 @@ public class JanelaTetris extends JFrame {
     }
 
     private JPanel criarSidebar() {
-        JPanel sidebar = new JPanel();
-        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBackground(new Color(72, 104, 217));
-        sidebar.setBorder(new EmptyBorder(30, 30, 30, 30));
-        sidebar.setPreferredSize(new Dimension(160, 0));
+    JPanel sidebar = new JPanel();
+    sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+    sidebar.setBackground(new Color(20, 20, 35));
+    sidebar.setBorder(new EmptyBorder(20, 15, 20, 15));
+    sidebar.setPreferredSize(new Dimension(160, 0));
 
-        // Próxima peça
-        sidebar.add(criarTitulo("PRÓXIMA PEÇA"));
-        sidebar.add(Box.createVerticalStrut(9));
-        sidebar.add(painelProximaPeca);
-        sidebar.add(Box.createVerticalStrut(20));
+    sidebar.add(criarSecao("PRÓXIMA", painelProximaPeca));
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSeparador());
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSecao("PONTUAÇÃO", criarValor(lblPontuacao)));
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSeparador());
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSecao("NÍVEL", criarValor(lblNivel)));
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSeparador());
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSecao("LINHAS", criarValor(lblLinhas)));
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSeparador());
+    sidebar.add(Box.createVerticalStrut(15));
+    sidebar.add(criarSecao("CONTROLES", criarControles()));
 
-        // Pontuação
-        sidebar.add(criarTitulo("PONTUAÇÃO"));
-        sidebar.add(Box.createVerticalStrut(5));
-        sidebar.add(criarValor(lblPontuacao));
-        sidebar.add(Box.createVerticalStrut(20));
-
-        // Nível
-        sidebar.add(criarTitulo("NÍVEL"));
-        sidebar.add(Box.createVerticalStrut(5));
-        sidebar.add(criarValor(lblNivel));
-        sidebar.add(Box.createVerticalStrut(20));
-
-        // Linhas
-        sidebar.add(criarTitulo("LINHAS"));
-        sidebar.add(Box.createVerticalStrut(5));
-        sidebar.add(criarValor(lblLinhas));
-        sidebar.add(Box.createVerticalStrut(20));
-
-        // Controles
-        sidebar.add(criarTitulo("CONTROLES"));
-        sidebar.add(Box.createVerticalStrut(8));
-        sidebar.add(criarControles());
-
-        return sidebar;
+    return sidebar;
     }
 
-    private JLabel criarTitulo(String texto) {
-        JLabel lbl = new JLabel(texto);
-        lbl.setForeground(new Color(180, 180, 180));
-        lbl.setFont(new Font("Arial", Font.BOLD, 11));
-        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return lbl;
+    private JPanel criarSecao(String titulo, JComponent conteudo) {
+    JPanel p = new JPanel();
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    p.setBackground(new Color(20, 20, 35));
+    p.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    JLabel lbl = new JLabel(titulo);
+    lbl.setForeground(new Color(120, 120, 150));
+    lbl.setFont(new Font("Arial", Font.BOLD, 10));
+    lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    conteudo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    p.add(lbl);
+    p.add(Box.createVerticalStrut(5));
+    p.add(conteudo);
+
+    return p;
     }
+
+    private JSeparator criarSeparador() {
+    JSeparator sep = new JSeparator();
+    sep.setForeground(new Color(60, 60, 80));
+    sep.setMaximumSize(new Dimension(130, 1));
+    sep.setAlignmentX(Component.LEFT_ALIGNMENT);
+    return sep;
+    }
+
+    // private JLabel criarTitulo(String texto) {
+    //     JLabel lbl = new JLabel(texto);
+    //     lbl.setForeground(new Color(180, 180, 180));
+    //     lbl.setFont(new Font("Arial", Font.BOLD, 11));
+    //     lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+    //     return lbl;
+    // }
 
     private JLabel criarValor(JLabel lbl) {
         lbl.setForeground(Color.WHITE);
@@ -106,7 +125,7 @@ public class JanelaTetris extends JFrame {
 
         for (String[] c : controles) {
             JPanel linha = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 2));
-            linha.setBackground(new Color(72, 104, 217));
+            linha.setBackground(new Color(20, 20, 35));
             linha.setMaximumSize(new Dimension(160, 25));
 
             JLabel tecla = new JLabel(c[0] + " ");

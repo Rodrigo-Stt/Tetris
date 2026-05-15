@@ -201,29 +201,37 @@ public class PainelJogo extends JPanel {
     }
 
     @Override
+
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    super.paintComponent(g2);
 
+    // Fundo do tabuleiro
+    g2.setColor(new Color(15, 15, 25));
+    g2.fillRect(0, 0, getWidth(), getHeight());
 
-        for (int y = 0; y < LINHAS; y++)
-            for (int x = 0; x < COLUNAS; x++)
-                if (tabuleiro[y][x] != 0)
-                    desenharCelula(g, x, y, tabuleiro[y][x]);
+    // Peças travadas
+    for (int y = 0; y < LINHAS; y++)
+        for (int x = 0; x < COLUNAS; x++)
+            if (tabuleiro[y][x] != 0)
+                desenharCelula(g2, x, y, tabuleiro[y][x]);
 
+    // Peça atual
+    for (int r = 0; r < formatoAtual.length; r++)
+        for (int c = 0; c < formatoAtual[0].length; c++)
+            if (formatoAtual[r][c] != 0)
+                desenharCelula(g2, xPeça + c, yPeça + r, idCorAtual);
 
-        for (int r = 0; r < formatoAtual.length; r++)
-            for (int c = 0; c < formatoAtual[0].length; c++)
-                if (formatoAtual[r][c] != 0)
-                    desenharCelula(g, xPeça + c, yPeça + r, idCorAtual);
-
-
-        g.setColor(new Color(60, 60, 60));
-        for (int x = 0; x <= COLUNAS; x++)
-            g.drawLine(x * TAM_CELULA_PX, 0, x * TAM_CELULA_PX, LINHAS * TAM_CELULA_PX);
-        for (int y = 0; y <= LINHAS; y++)
-            g.drawLine(0, y * TAM_CELULA_PX, COLUNAS * TAM_CELULA_PX, y * TAM_CELULA_PX);
+    // Grade discreta
+    g2.setColor(new Color(255, 255, 255, 15));
+    for (int x = 0; x <= COLUNAS; x++)
+        g2.drawLine(x * TAM_CELULA_PX, 0, x * TAM_CELULA_PX, LINHAS * TAM_CELULA_PX);
+    for (int y = 0; y <= LINHAS; y++)
+        g2.drawLine(0, y * TAM_CELULA_PX, COLUNAS * TAM_CELULA_PX, y * TAM_CELULA_PX);
     }
 
+    
     private void desenharCelula(Graphics g, int cx, int cy, int idCor) {
         Tetromino[] pecas = Tetromino.values();
         Color cor = pecas[(idCor - 1) % pecas.length].color;
@@ -236,4 +244,6 @@ public class PainelJogo extends JPanel {
         g.setColor(Color.BLACK);
         g.drawRect(px, py, TAM_CELULA_PX, TAM_CELULA_PX);
     }
+
+    
 }
