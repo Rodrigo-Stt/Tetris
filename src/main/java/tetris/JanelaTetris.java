@@ -95,14 +95,6 @@ public class JanelaTetris extends JFrame {
     return sep;
     }
 
-    // private JLabel criarTitulo(String texto) {
-    //     JLabel lbl = new JLabel(texto);
-    //     lbl.setForeground(new Color(180, 180, 180));
-    //     lbl.setFont(new Font("Arial", Font.BOLD, 11));
-    //     lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-    //     return lbl;
-    // }
-
     private JLabel criarValor(JLabel lbl) {
         lbl.setForeground(Color.WHITE);
         lbl.setFont(new Font("Arial", Font.BOLD, 22));
@@ -145,25 +137,21 @@ public class JanelaTetris extends JFrame {
     }
 
     private void atualizarPontuacao(int pontos) {
-    if (painelJogo == null) return;
-    lblPontuacao.setText(String.valueOf(pontos));
-    lblNivel.setText(String.valueOf(painelJogo.getNivel()));
-    lblLinhas.setText(String.valueOf(painelJogo.getLinhasEliminadas()));
-    painelProximaPeca.setPeca(painelJogo.getProximaPeca());
+        if (painelJogo == null) return;
+        lblPontuacao.setText(String.valueOf(pontos));
+        lblNivel.setText(String.valueOf(painelJogo.getNivel()));
+        lblLinhas.setText(String.valueOf(painelJogo.getLinhasEliminadas()));
+        painelProximaPeca.setPeca(painelJogo.getProximaPeca());
     }
 
     private void fimDeJogo(int pontosObtidos) {
-        String nome = JOptionPane.showInputDialog(
-            this,
-            "Fim de Jogo!\nDigite seu nome para o ranking.",
-            "Salvar Pontuação",
-            JOptionPane.QUESTION_MESSAGE);
 
-        if (nome == null || nome.isBlank()) nome = "Jogador";
+        DialogFimDeJogo dialog = new DialogFimDeJogo(
+        this, pontosObtidos, painelJogo.getNivel());
 
         try {
             PontuacaoDAO dao = PontuacaoDAO.getInstancia();
-            dao.salvarPontuacao(new ModeloPontuacao(nome, pontosObtidos));
+            dao.salvarPontuacao(new ModeloPontuacao(dialog.getNomeJogador(), pontosObtidos));
             List<ModeloPontuacao> top10 = dao.obterTopPontuacaos(10);
             new DialogRanking(this, top10);
         } catch (Exception e) {
@@ -174,18 +162,10 @@ public class JanelaTetris extends JFrame {
                 JOptionPane.WARNING_MESSAGE);
         }
 
-        int opc = JOptionPane.showConfirmDialog(
-            this,
-            "Deseja jogar novamente?",
-            "Novo jogo",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE);
-
-        if (opc == JOptionPane.YES_OPTION) {
+        if (dialog.isJogarNovamente()) {
             painelJogo.reiniciar();
         } else {
             System.exit(0);
         }
     }
-
 }

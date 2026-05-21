@@ -21,7 +21,6 @@ public class PainelJogo extends JPanel {
     private int xPeça, yPeça;
     private int pontosRodada = 0;
     private int[][] formatoAtual;
-    // Guarda o índice da peça atual para usar a cor correta
     private int idCorAtual;
 
     private final Consumer<Integer> cbPontuacao;
@@ -207,23 +206,19 @@ public class PainelJogo extends JPanel {
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     super.paintComponent(g2);
 
-    // Fundo do tabuleiro
     g2.setColor(new Color(15, 15, 25));
     g2.fillRect(0, 0, getWidth(), getHeight());
 
-    // Peças travadas
     for (int y = 0; y < LINHAS; y++)
         for (int x = 0; x < COLUNAS; x++)
             if (tabuleiro[y][x] != 0)
                 desenharCelula(g2, x, y, tabuleiro[y][x]);
 
-    // Peça atual
     for (int r = 0; r < formatoAtual.length; r++)
         for (int c = 0; c < formatoAtual[0].length; c++)
             if (formatoAtual[r][c] != 0)
                 desenharCelula(g2, xPeça + c, yPeça + r, idCorAtual);
 
-    // Grade discreta
     g2.setColor(new Color(255, 255, 255, 15));
     for (int x = 0; x <= COLUNAS; x++)
         g2.drawLine(x * TAM_CELULA_PX, 0, x * TAM_CELULA_PX, LINHAS * TAM_CELULA_PX);
